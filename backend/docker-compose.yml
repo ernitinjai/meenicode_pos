@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    container_name: pos_db
+    restart: always
+    environment:
+      POSTGRES_USER: nitin
+      POSTGRES_PASSWORD: nitin
+      POSTGRES_DB: mnposdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./pos_fastapi
+    container_name: pos_backend
+    restart: always
+    env_file:
+      - ./pos_fastapi/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./pos_react
+    container_name: pos_frontend
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
