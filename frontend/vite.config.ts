@@ -2,11 +2,14 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
+const isProduction = process.env.NODE_ENV === 'production';
+const basePath = isProduction ? '/meenicode/' : '/meenicode/';
+
 export default defineConfig(({ mode }) => ({
-  base: "/meenicode/",
+  base: basePath,
   server: {
     host: "::",
-    port: 8080,
+    port: 8081,
     open: true,
   },
   plugins: [react()],
