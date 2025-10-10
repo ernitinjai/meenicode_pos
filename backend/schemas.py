@@ -2,8 +2,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-class ProductSchema(BaseModel):
-    id: int
+class ProductCreate(BaseModel):
     name: str
     brand: str
     barcode: str
@@ -13,9 +12,9 @@ class ProductSchema(BaseModel):
     purchase_price: float
     current_stock: int
 
-    model_config = {
-        "from_attributes": True
-    }
+class ProductSchema(ProductCreate):
+    id: int
+    model_config = {"from_attributes": True}    
 
 class CustomerSchema(BaseModel):
     id: int

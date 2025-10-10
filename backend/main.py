@@ -33,5 +33,17 @@ def get_db():
 def get_products(db: Session = Depends(get_db)):
     return db.query(models.Product).all()
 
+@app.post("/products", response_model=schemas.ProductSchema)
+def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
+    db_product = models.Product(**product.dict())
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
 #app.include_router(products.router, prefix="/products", tags=["Products"])
 #app.include_router(customers.router, prefix="/customers", tags=["Customers"])
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
