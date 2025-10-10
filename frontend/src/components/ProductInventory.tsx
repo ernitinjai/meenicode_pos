@@ -14,6 +14,7 @@ interface Product {
     unitQuantity: number;
     unit: string;
     salePrice: number;
+    purchasePrice: number;
     currentStock: number;
     remark?: string;
     imageUrls?: string[];
@@ -163,6 +164,7 @@ const ProductInventory: React.FC = () => {
         { label: "Unit Qty", key: "unitQuantity" as keyof Product },
         { label: "Unit", key: "unit" as keyof Product },
         { label: "Sale Price", key: "salePrice" as keyof Product },
+        { label: "Purchase Price", key: "purchasePrice" as keyof Product },
         { label: "Stock", key: "currentStock" as keyof Product },
     ];
 
@@ -211,7 +213,7 @@ const ProductInventory: React.FC = () => {
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y text-gray-900">
                             {filteredProducts.map(product => (
                                 <tr key={product.id}>
                                     <td className="px-6 py-4">{product.name}</td>
