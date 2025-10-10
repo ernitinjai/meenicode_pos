@@ -1,0 +1,65 @@
+name: Deploy Fullstack App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    # =========================
+    # Backend Deployment
+    # =========================
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install backend dependencies & package
+      run: |
+        python -m pip install --upgrade pip
+        mkdir backend/package
+        pip install -r backend/requirements.txt -t backend/package/
+        cp -r backend/*.py backend/package/
+        cd backend/package
+        zip -r ../../backend-deploy.zip .
+
+    - name: Deploy backend to AWS Lambda
+      uses: appleboy/lambda-action@master
+      with:
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_region: us-east-1
+        function_name: fastapi-supabase-lambda
+        zip_file: backend-deploy.zip
+
+    # =========================
+    # Frontend Deployment
+    # =========================
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm install
+        npm run build
+
+    - name: Deploy frontend to S3
+      uses: jakejarvis/s3-sync-action@v1
+      with:
+        args: --acl public-read --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: us-east-1
+        SOURCE_DIR: "frontend/build"  # change if your build folder differs

@@ -5,6 +5,9 @@ from typing import List
 from database import SessionLocal, engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 import models, schemas
+from mangum import Mangum
+
+
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -20,6 +23,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+handler = Mangum(app)
 
 # Dependency
 def get_db():

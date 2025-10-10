@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "vite build && cp ./dist/index.html ./dist/404.html",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "start": "vite preview --port 5173"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
