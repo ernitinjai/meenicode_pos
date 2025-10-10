@@ -54,7 +54,7 @@ jobs:
         npm run build
 
     - name: Deploy frontend to S3
-      uses: jakejarvis/s3-sync-action@v1
+      uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl public-read --delete
       env:
