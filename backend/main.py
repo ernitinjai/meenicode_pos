@@ -15,10 +15,14 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Enable CORS for React
+origins = [
+    "http://localhost:8081",  # your local dev URL
+    "http://meenicode-frontend.s3-website.ap-south-1.amazonaws.com",  # deployed frontend
+    "*"  # optional, allow all origins
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or ["http://localhost:5173"] for dev
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
