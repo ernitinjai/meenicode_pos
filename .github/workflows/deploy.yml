@@ -36,7 +36,7 @@ jobs:
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_region: us-east-1
-        function_name: astapi-supabase-lambda
+        function_name: fastapi-supabase-lambda
         zip_file: backend-deploy.zip
 
     # =========================
