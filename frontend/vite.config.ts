@@ -3,10 +3,10 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 const isProduction = process.env.NODE_ENV === 'production';
-const basePath = isProduction ? '/meenicode/' : '/meenicode/';
+//const basePath = isProduction ? '/meenicode/' : '/meenicode/';
 
 export default defineConfig(({ mode }) => ({
-  base: basePath,
+  base: './',
   server: {
     host: "::",
     port: 8081,
