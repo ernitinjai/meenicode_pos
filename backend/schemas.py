@@ -1,5 +1,5 @@
 # schemas.py
-from pydantic import BaseModel,EmailStr, constr
+from pydantic import BaseModel,EmailStr
 from typing import List, Optional
 
 class ProductCreate(BaseModel):
