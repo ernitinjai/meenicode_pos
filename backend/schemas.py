@@ -1,5 +1,5 @@
 # schemas.py
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr, constr
 from typing import List, Optional
 
 class ProductCreate(BaseModel):
@@ -34,3 +34,21 @@ class SaleItemCreate(BaseModel):
 class SaleCreate(BaseModel):
     customer_id: int
     items: List[SaleItemCreate]
+
+class ShopBase(BaseModel):
+    shopName: str
+    ownerName: str
+    shopCategory: str
+    email: EmailStr
+    phoneNumber: constr(regex=r'^\d{10}$')
+    address: str
+    password: str
+
+class ShopCreate(ShopBase):
+    pass
+
+class ShopSchema(ShopBase):
+    id: str
+    class Config:
+        orm_mode = True
+

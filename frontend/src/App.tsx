@@ -13,12 +13,12 @@ const queryClient = new QueryClient();
 
 // Component to provide useNavigate access to AppContent
 const AppRouterWrapper = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   // Handler passed to LoginRegisterModal via Navbar
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
+    setIsAuthenticated(false);
     // 1. Close the modal (handled by the Navbar component's state, but often done here too)
     // 2. Navigate to the dashboard
     navigate('/dashboard');

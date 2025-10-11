@@ -12,7 +12,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-saas-black text-white">
       <Navbar
-        isAuthenticated={true}
+        isAuthenticated={false}
         onAuthSuccess={function (): void {
           throw new Error('Function not implemented.');
         }}

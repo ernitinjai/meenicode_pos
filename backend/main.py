@@ -75,7 +75,37 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": f"Product ID {product_id} deleted successfully"}
 
+@app.get("/shops", response_model=List[schemas.ShopSchema])
+def get_shops(db: Session = Depends(get_db)):
+    return db.query(models.Shop).all()
 
+@app.post("/shops", response_model=schemas.ShopSchema)
+def create_shop(shop: schemas.ShopCreate, db: Session = Depends(get_db)):
+    # Create unique ID as shopname_phonenumber
+    shop_id = f"{shop.shopName}_{shop.phoneNumber}"
+    
+    # Check duplicate
+    existing = db.query(models.Shop).filter(models.Shop.id == shop_id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Shop already exists with this name and phone number")
+
+    db_shop = models.Shop(id=shop_id, **shop.dict())
+    db.add(db_shop)
+    db.commit()
+    db.refresh(db_shop)
+    return db_shop
+
+@app.post("/shops/login")
+def login_shop(shop_login: schemas.ShopLogin, db: Session = Depends(get_db)):
+    shop = db.query(models.Shop).filter(models.Shop.email == shop_login.email).first()
+
+    if not shop:
+        return {"success": False, "message": "Email not found"}
+
+    if shop.password != shop_login.password:
+        return {"success": False, "message": "Incorrect password"}
+
+    return {"success": True, "message": "Login successful", "shopId": shop.id}
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
 #app.include_router(customers.router, prefix="/customers", tags=["Customers"])

@@ -8,7 +8,6 @@ export interface LoginRegisterModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialTab: 'login' | 'register';
-    // 💡 NEW PROP: Handler for successful authentication
     onAuthSuccess: () => void; 
 }
 
@@ -21,10 +20,7 @@ const LIGHT_TEXT = '#FFF';
 
 const ModalOverlay = styled.div<{ isOpen: boolean }>`
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.6);
     display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
     justify-content: center;
@@ -42,12 +38,6 @@ const ModalContent = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    /* Mobile responsiveness */
-    @media (max-width: 600px) {
-        width: 95%;
-        padding: 15px;
-    }
 `;
 
 const TabNav = styled.div`
@@ -68,70 +58,6 @@ const TabButton = styled.button<{ active: boolean }>`
     cursor: pointer;
     border-bottom: 2px solid ${({ active }) => (active ? PRIMARY_ORANGE : 'transparent')};
     transition: all 0.3s ease;
-
-    &:hover:not([disabled]) {
-        color: ${DARK_ORANGE};
-    }
-`;
-
-const SocialConnect = styled.div`
-    width: 100%;
-    text-align: center;
-    margin-bottom: 15px;
-    p { margin-bottom: 10px; }
-`;
-
-const SocialButtons = styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-`;
-
-const SocialButton = styled.button<{ iconColor: string }>`
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid ${({ iconColor }) => iconColor};
-    background: ${LIGHT_TEXT};
-    color: ${({ iconColor }) => iconColor};
-    font-size: 1.1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background: ${({ iconColor }) => iconColor};
-        color: ${LIGHT_TEXT};
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
-    }
-`;
-
-const OrSeparator = styled.p`
-    /* Styling for the 'or' separator */
-    position: relative;
-    width: 100%;
-    text-align: center;
-    margin: 15px 0;
-    &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        border-top: 1px solid ${BORDER_COLOR};
-        z-index: 1;
-    }
-    span {
-        background: ${LIGHT_TEXT};
-        padding: 0 10px;
-        position: relative;
-        z-index: 2;
-        color: ${BORDER_COLOR};
-        font-size: 0.9rem;
-    }
 `;
 
 const Form = styled.form`
@@ -148,17 +74,27 @@ const Input = styled.input`
     border-radius: 4px;
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s ease;
+    color: ${DARK_TEXT};      /* <-- fix text color */
+    background: ${LIGHT_TEXT}; /* ensure background is light */
     &:focus { border-color: ${PRIMARY_ORANGE}; }
 `;
 
-const ForgotPassword = styled.p`
+const Select = styled.select`
     width: 100%;
-    text-align: right;
-    margin-top: -5px;
-    font-size: 0.9rem;
-    a { color: ${PRIMARY_ORANGE}; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    padding: 12px;
+    border: 1px solid ${BORDER_COLOR};
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+    color: ${DARK_TEXT};      /* <-- fix text color */
+    background: ${LIGHT_TEXT};
+    &:focus { border-color: ${PRIMARY_ORANGE}; }
+`;
+
+const ErrorMsg = styled.p`
+    color: red;
+    font-size: 0.85rem;
+    margin: -10px 0 0 5px;
 `;
 
 const SubmitButton = styled.button`
@@ -198,101 +134,221 @@ const CloseButton = styled.button`
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     &:hover { background: ${BORDER_COLOR}; }
 `;
 
-// --- The Functional Component ---
+const ProgressBar = styled.div<{ progress: number }>`
+    height: 6px;
+    width: 100%;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 15px;
+
+    &::after {
+        content: '';
+        display: block;
+        height: 100%;
+        width: ${({ progress }) => progress}%;
+        background: ${PRIMARY_ORANGE};
+        transition: width 0.3s ease;
+    }
+`;
+
+// --- Component ---
 const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose, initialTab, onAuthSuccess }) => {
     const [activeTab, setActiveTab] = useState<'login' | 'register'>(initialTab);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // Registration fields
+    const [shopName, setShopName] = useState('');
+    const [ownerName, setOwnerName] = useState('');
+    const [shopCategory, setShopCategory] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [address, setAddress] = useState('');
+
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [progress, setProgress] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             setActiveTab(initialTab);
             setEmail('');
             setPassword('');
+            setErrors({});
         }
     }, [isOpen, initialTab]);
 
-    const handleFormSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // ⚠️ Placeholder for API call
-        if (activeTab === 'login') {
-            console.log('Login attempt:', { email, password });
-            // Simulate success
-            onAuthSuccess(); 
+    const validate = () => {
+        const newErrors: any = {};
+        if (activeTab === 'register') {
+            if (!shopName) newErrors.shopName = "Shop name is required";
+            if (!ownerName) newErrors.ownerName = "Owner name is required";
+            if (!shopCategory) newErrors.shopCategory = "Select a category";
+            if (!email) newErrors.email = "Email is required";
+            else if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = "Invalid email";
+            if (!phoneNumber) newErrors.phoneNumber = "Phone number is required";
+            else if (!/^\d{10}$/.test(phoneNumber)) newErrors.phoneNumber = "Phone must be 10 digits";
+            if (!address) newErrors.address = "Address is required";
+            if (!password) newErrors.password = "Password is required";
         } else {
-            console.log('Register attempt:', { email, password });
-            // Simulate success
-            onAuthSuccess(); 
+            if (!email && !phoneNumber) newErrors.email = "Email or phone is required";
+            if (!password) newErrors.password = "Password is required";
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!validate()) return;
+
+        if (activeTab === 'login') {
+            // --- LOGIN FLOW ---
+            setLoading(true);
+            setProgress(25);
+            setErrors({});
+
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/shops/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                setProgress(60);
+                const result = await response.json();
+
+                if (result.success) {
+                    setProgress(100);
+                    await new Promise(r => setTimeout(r, 500));
+                    localStorage.setItem("shopInfo", JSON.stringify(result));
+                    onAuthSuccess();
+                } else {
+                    setErrors({ general: result.message || "Invalid email or password" });
+                }
+            } catch (err: any) {
+                setErrors({ general: "Login failed: " + err.message });
+            } finally {
+                setLoading(false);
+                setProgress(0);
+            }
+        } else {
+            // --- REGISTER FLOW ---
+            setLoading(true);
+            setProgress(20);
+
+            const shopData = {
+                shopName,
+                ownerName,
+                shopCategory,
+                email,
+                phoneNumber,
+                address,
+                password
+            };
+
+            try {
+                setProgress(50);
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/shops`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(shopData)
+                });
+                setProgress(80);
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText || "Failed to register shop");
+                }
+
+                setProgress(100);
+                await new Promise(r => setTimeout(r, 500));
+                alert("Registration successful!");
+                onAuthSuccess();
+            } catch (err: any) {
+                alert("Registration failed: " + err.message);
+            } finally {
+                setLoading(false);
+                setProgress(0);
+            }
         }
     };
 
     return (
         <ModalOverlay isOpen={isOpen} onClick={onClose}>
             <ModalContent onClick={(e) => e.stopPropagation()}>
-                {/* Tab Navigation */}
                 <TabNav>
-                    <TabButton
-                        active={activeTab === 'login'}
-                        onClick={() => setActiveTab('login')}
-                    >
-                        LOGIN
-                    </TabButton>
-                    <TabButton
-                        active={activeTab === 'register'}
-                        onClick={() => setActiveTab('register')}
-                    >
-                        REGISTER
-                    </TabButton>
+                    <TabButton active={activeTab === 'login'} onClick={() => setActiveTab('login')}>LOGIN</TabButton>
+                    <TabButton active={activeTab === 'register'} onClick={() => setActiveTab('register')}>REGISTER</TabButton>
                 </TabNav>
 
-                {/* Social Login Section */}
-                <SocialConnect>
-                    <p>Connect with:</p>
-                    <SocialButtons>
-                        <SocialButton iconColor="#3b5998" title="Facebook">
-                            <i className="fab fa-facebook-f"></i>
-                        </SocialButton>
-                        <SocialButton iconColor="#dd4b39" title="Google">
-                            <i className="fab fa-google"></i>
-                        </SocialButton>
-                        <SocialButton iconColor="#55acee" title="Twitter">
-                            <i className="fab fa-twitter"></i>
-                        </SocialButton>
-                    </SocialButtons>
-                </SocialConnect>
+                {loading && <ProgressBar progress={progress} />}
 
-                <OrSeparator><span>or</span></OrSeparator>
-
-                {/* Form Section */}
                 <Form onSubmit={handleFormSubmit}>
-                    <Input
-                        type="email"
-                        placeholder="Your E-mail or username"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    <Input
-                        type="password"
-                        placeholder="Your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+                    {activeTab === 'register' && (
+                        <>
+                            <Input placeholder="Shop Name" value={shopName} onChange={e => setShopName(e.target.value)} />
+                            {errors.shopName && <ErrorMsg>{errors.shopName}</ErrorMsg>}
 
-                    {activeTab === 'login' && (
-                        <ForgotPassword>
-                            <a href="#forgot">Forgot password?</a>
-                        </ForgotPassword>
+                            <Input placeholder="Owner Name" value={ownerName} onChange={e => setOwnerName(e.target.value)} />
+                            {errors.ownerName && <ErrorMsg>{errors.ownerName}</ErrorMsg>}
+
+                            <Select value={shopCategory} onChange={e => setShopCategory(e.target.value)}>
+                                <option value="">Select category</option>
+                                <option value="Medical">Medical</option>
+                                <option value="General Stall">General Stall</option>
+                                <option value="Tea Stall">Tea Stall</option>
+                                <option value="Hardware">Hardware</option>
+                                <option value="Bakery">Bakery</option>
+                                <option value="Stationary">Stationary</option>
+                            </Select>
+                            {errors.shopCategory && <ErrorMsg>{errors.shopCategory}</ErrorMsg>}
+                        </>
                     )}
 
+                    <Input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    {errors.email && <ErrorMsg>{errors.email}</ErrorMsg>}
+
+                    {activeTab === 'register' && (
+                        <>
+                            <Input
+                                type="tel"
+                                placeholder="Phone Number"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                            />
+                            {errors.phoneNumber && <ErrorMsg>{errors.phoneNumber}</ErrorMsg>}
+
+                            <Input
+                                type="text"
+                                placeholder="Address"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
+                            {errors.address && <ErrorMsg>{errors.address}</ErrorMsg>}
+                        </>
+                    )}
+
+                    <Input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {errors.password && <ErrorMsg>{errors.password}</ErrorMsg>}
+
+                    {activeTab === 'login' && errors.general && <ErrorMsg>{errors.general}</ErrorMsg>}
+
                     <SubmitButton type="submit">
-                        {activeTab === 'login' ? 'SIGN IN' : 'REGISTER'}
+                        {activeTab === 'login' ? 'SIGN IN' : loading ? 'REGISTERING...' : 'REGISTER'}
                     </SubmitButton>
                 </Form>
 
@@ -302,10 +358,7 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose
                     </MemberStatus>
                 )}
 
-                {/* Close Button */}
-                <CloseButton onClick={onClose}>
-                    CLOSE
-                </CloseButton>
+                <CloseButton onClick={onClose}>CLOSE</CloseButton>
             </ModalContent>
         </ModalOverlay>
     );
