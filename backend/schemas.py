@@ -40,7 +40,7 @@ class ShopBase(BaseModel):
     ownerName: str
     shopCategory: str
     email: EmailStr
-    phoneNumber: constr(regex=r'^\d{10}$')
+    phoneNumber: str
     address: str
     password: str
 
@@ -51,4 +51,10 @@ class ShopSchema(ShopBase):
     id: str
     class Config:
         orm_mode = True
+
+class ShopLogin(BaseModel):
+    email: str
+    password: str        
+
+
 
