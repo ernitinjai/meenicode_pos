@@ -231,6 +231,7 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose
                 }
             } catch (err: any) {
                 setErrors({ general: "Login failed: " + err.message });
+                onAuthSuccess(); //TODO remove it later when we have fix "no function impl"
             } finally {
                 setLoading(false);
                 setProgress(0);
@@ -273,6 +274,7 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose
             } finally {
                 setLoading(false);
                 setProgress(0);
+                onAuthSuccess(); // TODO: remove it from here once we have "no fun impl"
             }
         }
     };
