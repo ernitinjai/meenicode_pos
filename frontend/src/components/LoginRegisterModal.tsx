@@ -18,11 +18,11 @@ const BORDER_COLOR = '#DDD';
 const DARK_TEXT = '#333';
 const LIGHT_TEXT = '#FFF';
 
-const ModalOverlay = styled.div<{ isOpen: boolean }>`
+const ModalOverlay = styled.div<{ $isOpen: boolean }>`
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.6);
-    display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+    display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -47,16 +47,16 @@ const TabNav = styled.div`
     border-bottom: 2px solid ${BORDER_COLOR};
 `;
 
-const TabButton = styled.button<{ active: boolean }>`
+const TabButton = styled.button<{ $active: boolean }>`
     flex: 1;
     padding: 12px 0;
     border: none;
     background: transparent;
     font-size: 1.1rem;
     font-weight: bold;
-    color: ${({ active }) => (active ? PRIMARY_ORANGE : DARK_TEXT)};
+    color: ${({ $active }) => ($active ? PRIMARY_ORANGE : DARK_TEXT)};
     cursor: pointer;
-    border-bottom: 2px solid ${({ active }) => (active ? PRIMARY_ORANGE : 'transparent')};
+    border-bottom: 2px solid ${({ $active }) => ($active ? PRIMARY_ORANGE : 'transparent')};
     transition: all 0.3s ease;
 `;
 
@@ -137,7 +137,7 @@ const CloseButton = styled.button`
     &:hover { background: ${BORDER_COLOR}; }
 `;
 
-const ProgressBar = styled.div<{ progress: number }>`
+const ProgressBar = styled.div<{ $progress: number }>`
     height: 6px;
     width: 100%;
     background: #eee;
@@ -149,7 +149,7 @@ const ProgressBar = styled.div<{ progress: number }>`
         content: '';
         display: block;
         height: 100%;
-        width: ${({ progress }) => progress}%;
+        width: ${({ $progress }) => $progress}%;
         background: ${PRIMARY_ORANGE};
         transition: width 0.3s ease;
     }
@@ -218,20 +218,24 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose
                     body: JSON.stringify({ email, password }),
                 });
 
+                //console.log(response.status, await response.text());
+
                 setProgress(60);
                 const result = await response.json();
+
+                //console.log(result.status, await result.text());
 
                 if (result.success) {
                     setProgress(100);
                     await new Promise(r => setTimeout(r, 500));
                     localStorage.setItem("shopInfo", JSON.stringify(result));
+                    onClose();
                     onAuthSuccess();
                 } else {
                     setErrors({ general: result.message || "Invalid email or password" });
                 }
             } catch (err: any) {
                 setErrors({ general: "Login failed: " + err.message });
-                onAuthSuccess(); //TODO remove it later when we have fix "no function impl"
             } finally {
                 setLoading(false);
                 setProgress(0);
@@ -268,26 +272,25 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose
                 setProgress(100);
                 await new Promise(r => setTimeout(r, 500));
                 alert("Registration successful!");
-                onAuthSuccess();
+                setActiveTab('login');
             } catch (err: any) {
                 alert("Registration failed: " + err.message);
             } finally {
                 setLoading(false);
                 setProgress(0);
-                onAuthSuccess(); // TODO: remove it from here once we have "no fun impl"
             }
         }
     };
 
     return (
-        <ModalOverlay isOpen={isOpen} onClick={onClose}>
+        <ModalOverlay $isOpen={isOpen} onClick={onClose}>
             <ModalContent onClick={(e) => e.stopPropagation()}>
                 <TabNav>
-                    <TabButton active={activeTab === 'login'} onClick={() => setActiveTab('login')}>LOGIN</TabButton>
-                    <TabButton active={activeTab === 'register'} onClick={() => setActiveTab('register')}>REGISTER</TabButton>
+                    <TabButton $active={activeTab === 'login'} onClick={() => setActiveTab('login')}>LOGIN</TabButton>
+                    <TabButton $active={activeTab === 'register'} onClick={() => setActiveTab('register')}>REGISTER</TabButton>
                 </TabNav>
 
-                {loading && <ProgressBar progress={progress} />}
+                {loading && <ProgressBar $progress={progress} />}
 
                 <Form onSubmit={handleFormSubmit}>
                     {activeTab === 'register' && (

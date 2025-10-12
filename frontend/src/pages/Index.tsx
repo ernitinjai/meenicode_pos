@@ -11,15 +11,6 @@ import Footer from '@/components/Footer';
 const Index = () => {
   return (
     <div className="min-h-screen bg-saas-black text-white">
-      <Navbar
-        isAuthenticated={false}
-        onAuthSuccess={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-        onSignOut={function (): void {
-          throw new Error('Function not implemented.');
-        }}
-      />
       <main>
         <HeroSection />
 

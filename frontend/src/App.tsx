@@ -18,7 +18,7 @@ const AppRouterWrapper = () => {
 
   // Handler passed to LoginRegisterModal via Navbar
   const handleAuthSuccess = () => {
-    setIsAuthenticated(false);
+    setIsAuthenticated(true);
     // 1. Close the modal (handled by the Navbar component's state, but often done here too)
     // 2. Navigate to the dashboard
     navigate('/dashboard');
@@ -34,21 +34,25 @@ const AppRouterWrapper = () => {
   return (
     <>
       {/* Navbar is outside Routes so it persists across pages */}
-      
+      <Navbar
+        isAuthenticated={isAuthenticated}
+        onAuthSuccess={handleAuthSuccess}
+        onSignOut={handleSignOut}
+      />
       <Routes>
         <Route path="/" element={<Index />} />
-        
+
         {/* Dashboard Route - Only accessible if isAuthenticated is true */}
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Index />} // Redirects to Home if not authenticated
         />
 
-        <Route 
-                    path="/inventory" 
-                    element={isAuthenticated ? <ProductInventory /> : <Index />} 
-                />
-        
+        <Route
+          path="/inventory"
+          element={isAuthenticated ? <ProductInventory /> : <Index />}
+        />
+
         {/* Example placeholder routes (You should implement components for these) */}
         <Route path="/roadmap" element={<div className='p-8'>Roadmap Page</div>} />
         <Route path="/pricing" element={<div className='p-8'>Pricing Page</div>} />
