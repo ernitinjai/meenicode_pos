@@ -228,7 +228,7 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({ isOpen, onClose
                 if (result.success) {
                     setProgress(100);
                     await new Promise(r => setTimeout(r, 500));
-                    localStorage.setItem("shopInfo", JSON.stringify(result));
+                    localStorage.setItem("shopInfo", JSON.stringify(result.shop));
                     onClose();
                     onAuthSuccess();
                 } else {

@@ -30,7 +30,7 @@ const AppRouterWrapper = () => {
     // 1. Close the modal (handled by the Navbar component's state, but often done here too)
     // 2. Navigate to the dashboard
     const shopInfo = JSON.parse(localStorage.getItem("shopInfo") || "{}");
-    navigate('/dashboard',{ state: { shop: shopInfo } });
+    navigate('/dashboard', { state: { shop: shopInfo } });
     console.log("Authentication successful, navigating to Dashboard.");
   };
 

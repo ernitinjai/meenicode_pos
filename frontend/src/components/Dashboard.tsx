@@ -118,22 +118,28 @@ const MetricCard: React.FC<Metric> = ({ title, value, change, color, icon: Icon,
 
 const Dashboard: React.FC = () => {
     const location = useLocation();
-    const shop = location.state?.shop || JSON.parse(localStorage.getItem("shopInfo") || "{}");
+    const shop = location.state?.shop || JSON.parse(localStorage.getItem("shopInfo") || "{}").shop || {};
 
+    console.log("🧾 Final Shop object:", shop);
     return (
         <div className="flex min-h-screen bg-gray-50">
 
             {/* 1. Sidebar */}
             <div className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
                 {/* Team Info */}
-                <div className="flex items-center space-x-2 mb-8 p-2">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <ShoppingBag className="w-4 h-4 text-indigo-600" />
+                <div className="flex items-start space-x-3 mb-8 p-4 bg-white rounded-xl shadow-sm">
+                    {/* Shop Icon */}
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <ShoppingBag className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <span className="font-bold text-lg text-gray-800">{shop.shopName || "Shop"}</span>
-                    <span className="text-sm text-gray-600">{shop.ownerName}</span>
-                    <span className="text-xs text-gray-500">{shop.shopCategory}</span>
-                    <span className="text-xs text-gray-400">{shop.address}</span>
+
+                    {/* Shop Details (stacked vertically) */}
+                    <div className="flex flex-col">
+                        <span className="font-bold text-lg text-gray-800">{shop.shopName || "Shop"}</span>
+                        <span className="text-sm text-gray-700">{shop.ownerName}</span>
+                        <span className="text-sm text-gray-600">{shop.shopCategory}</span>
+                        <span className="text-sm text-gray-500">{shop.address}</span>
+                    </div>
                 </div>
 
                 {/* Navigation Links */}
