@@ -1,11 +1,13 @@
 // src/components/Dashboard.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
     PieChart, Pie, Cell, ResponsiveContainer
 } from 'recharts';
-import { LayoutDashboard, Users, ShoppingBag, BookOpen, LogIn, TrendingUp, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Users, ShoppingBag, BookOpen, LogIn, TrendingUp, DollarSign, IndianRupeeIcon } from 'lucide-react';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 // --- Type Definitions ---
 
@@ -22,7 +24,7 @@ interface NavLinkProps {
     icon: React.ElementType;
     label: string;
     isActive: boolean;
-    path?: string; 
+    path?: string;
 }
 
 interface PieData {
@@ -41,10 +43,10 @@ interface BarData {
 // --- Placeholder Data ---
 
 const keyMetrics: Metric[] = [
-    { title: "Day Sales", value: "714K", change: "+2.6%", color: "text-blue-500", icon: DollarSign, bgColor: "bg-blue-100/30" },
-    { title: "Week Sales", value: "1.35M", change: "-0.1%", color: "text-purple-500", icon: TrendingUp, bgColor: "bg-purple-100/30" },
+    { title: "Day Sales", value: "714K", change: "+2.6%", color: "text-blue-500", icon: IndianRupeeIcon, bgColor: "bg-blue-100/30" },
+    { title: "Week Sales", value: "1.35M", change: "-0.1%", color: "text-purple-500", icon: IndianRupeeIcon, bgColor: "bg-purple-100/30" },
     { title: "Total Inventory", value: "1.72M", change: "+2.8%", color: "text-yellow-500", icon: ShoppingBag, bgColor: "bg-yellow-100/30" },
-    { title: "Messages", value: "234", change: "+3.6%", color: "text-red-500", icon: BookOpen, bgColor: "bg-red-100/30" },
+    { title: "Credit", value: "234", change: "+3.6%", color: "text-red-500", icon: IndianRupeeIcon, bgColor: "bg-red-100/30" },
 ];
 
 // Pie Chart Data (Product Sale Category)
@@ -76,9 +78,8 @@ const barData: BarData[] = [
 // --- Sub-Components ---
 
 const NavLink: React.FC<NavLinkProps> = ({ icon: Icon, label, isActive, path }) => {
-    const content = <div className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${
-        isActive ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-600 hover:bg-gray-100'
-    }`}>
+    const content = <div className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${isActive ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-600 hover:bg-gray-100'
+        }`}>
         <Icon className="w-5 h-5" />
         <span>{label}</span>
     </div>
@@ -116,9 +117,12 @@ const MetricCard: React.FC<Metric> = ({ title, value, change, color, icon: Icon,
 // --- Main Component ---
 
 const Dashboard: React.FC = () => {
+    const location = useLocation();
+    const shop = location.state?.shop || JSON.parse(localStorage.getItem("shopInfo") || "{}");
+
     return (
         <div className="flex min-h-screen bg-gray-50">
-            
+
             {/* 1. Sidebar */}
             <div className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
                 {/* Team Info */}
@@ -126,19 +130,21 @@ const Dashboard: React.FC = () => {
                     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                         <ShoppingBag className="w-4 h-4 text-indigo-600" />
                     </div>
-                    <span className="font-bold text-lg text-gray-800">Team 1</span>
-                    <span className="text-xs text-gray-500 border rounded-full px-2 py-0.5">Free</span>
+                    <span className="font-bold text-lg text-gray-800">{shop.shopName || "Shop"}</span>
+                    <span className="text-sm text-gray-600">{shop.ownerName}</span>
+                    <span className="text-xs text-gray-500">{shop.shopCategory}</span>
+                    <span className="text-xs text-gray-400">{shop.address}</span>
                 </div>
 
                 {/* Navigation Links */}
                 <div className="space-y-1">
                     <NavLink icon={LayoutDashboard} label="Dashboard" isActive={true} />
-                    <NavLink icon={Users} label="User" isActive={false} />
-                    <NavLink icon={ShoppingBag} label="Product" isActive={false} path="/inventory" />
+                    <NavLink icon={Users} label="Customer" isActive={false} />
+                    <NavLink icon={ShoppingBag} label="Products" isActive={false} path="/inventory" />
                     <NavLink icon={BookOpen} label="Blog" isActive={false} />
                 </div>
-               
-                
+
+
             </div>
 
             {/* 2. Main Content Area */}
@@ -152,7 +158,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Charts Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
+
                     {/* Pie Chart: Product Sale Category */}
                     <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm h-[400px]">
                         <h2 className="text-lg font-semibold text-gray-800 mb-4">Product Sale Category</h2>
@@ -186,9 +192,9 @@ const Dashboard: React.FC = () => {
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                 <XAxis dataKey="name" stroke="#6b7280" />
                                 <YAxis stroke="#6b7280" />
-                                <Tooltip 
+                                <Tooltip
                                     contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px' }}
-                                    formatter={(value: number | string) => `${value}M`} 
+                                    formatter={(value: number | string) => `${value}M`}
                                 />
                                 <Legend wrapperStyle={{ paddingTop: '10px' }} />
                                 <Bar dataKey="Team A" fill="#2563EB" name="Team A" />

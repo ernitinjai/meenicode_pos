@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,16 +16,26 @@ const AppRouterWrapper = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const shopInfo = localStorage.getItem("shopInfo");
+    if (shopInfo) {
+      setIsAuthenticated(true);
+      console.log("Auto-login using saved shopInfo");
+    }
+  }, []);
+
   // Handler passed to LoginRegisterModal via Navbar
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
     // 1. Close the modal (handled by the Navbar component's state, but often done here too)
     // 2. Navigate to the dashboard
-    navigate('/dashboard');
+    const shopInfo = JSON.parse(localStorage.getItem("shopInfo") || "{}");
+    navigate('/dashboard',{ state: { shop: shopInfo } });
     console.log("Authentication successful, navigating to Dashboard.");
   };
 
   const handleSignOut = () => {
+    localStorage.removeItem("shopInfo");
     setIsAuthenticated(false);
     navigate('/');
     console.log("Signed out, navigating to Home.");

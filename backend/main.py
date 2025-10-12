@@ -105,7 +105,34 @@ def login_shop(shop_login: schemas.ShopLogin, db: Session = Depends(get_db)):
     if shop.password != shop_login.password:
         return {"success": False, "message": "Incorrect password"}
 
-    return {"success": True, "message": "Login successful", "shopId": shop.id}
+    return {
+        "success": True,
+        "message": "Login successful",
+        "shop": {
+            "id": shop.id,
+            "shopName": shop.shopName,
+            "ownerName": shop.ownerName,
+            "shopCategory": shop.shopCategory,
+            "email": shop.email,
+            "phoneNumber": shop.phoneNumber,
+            "address": shop.address,
+        }
+    }
+
+@app.get("/shops/{shop_name}")
+def get_shop_by_name(shop_name: str, db: Session = Depends(get_db)):
+    shop = db.query(models.Shop).filter(models.Shop.shopName == shop_name).first()
+    if not shop:
+        return {"success": False, "message": "shop not found"}
+    
+    return {
+        "shopName": shop.shopName,
+        "ownerName": shop.ownerName,
+        "address": shop.address,
+        "shopCategory": shop.shopCategory,
+        "email": shop.email,
+        "phoneNumber": shop.phoneNumber
+    }
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
 #app.include_router(customers.router, prefix="/customers", tags=["Customers"])
