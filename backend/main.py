@@ -1,4 +1,5 @@
 
+import time
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -31,7 +32,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-handler = Mangum(app)
+
 
 # Dependency
 def get_db():
@@ -168,7 +169,9 @@ async def cloudinary_sign():
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
 #app.include_router(customers.router, prefix="/customers", tags=["Customers"])
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+handler = Mangum(app)
+#if __name__ == "__main__":
+    #import uvicorn
+    #uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    
+    
