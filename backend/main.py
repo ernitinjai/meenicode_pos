@@ -153,7 +153,8 @@ async def cloudinary_sign():
     timestamp = int(time.time())
     
     # Add additional options if you want folder, public_id, etc.
-    params_to_sign = {"timestamp": timestamp}
+    params_to_sign = {"timestamp": timestamp,
+                      "folder": "meenicode"}
     
     signature = cloudinary.utils.api_sign_request(
         params_to_sign,
@@ -164,7 +165,8 @@ async def cloudinary_sign():
         "signature": signature,
         "timestamp": timestamp,
         "api_key": cloudinary.config().api_key,
-        "cloud_name": cloudinary.config().cloud_name
+        "cloud_name": cloudinary.config().cloud_name,
+        "folder": "meenicode"
     })
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
