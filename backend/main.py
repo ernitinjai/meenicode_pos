@@ -1,10 +1,13 @@
 
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing import List
 from database import SessionLocal, engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 import models, schemas
+import cloudinary
+import cloudinary.utils
 from mangum import Mangum
 
 
@@ -133,6 +136,35 @@ def get_shop_by_name(shop_name: str, db: Session = Depends(get_db)):
         "email": shop.email,
         "phoneNumber": shop.phoneNumber
     }
+
+cloudinary.config(
+    cloud_name="dcra3g9sk",
+    api_key="886161733275543",
+    api_secret="GJAjOIJCEobqTyvMdCW5XvqVMOc"
+)  
+
+@app.get("/cloudinary-sign")
+async def cloudinary_sign():
+    """
+    Generate signed params for Cloudinary uploads.
+    Compose app will call this function.
+    """
+    timestamp = int(time.time())
+    
+    # Add additional options if you want folder, public_id, etc.
+    params_to_sign = {"timestamp": timestamp}
+    
+    signature = cloudinary.utils.api_sign_request(
+        params_to_sign,
+        cloudinary.config().api_secret
+    )
+
+    return JSONResponse(content={
+        "signature": signature,
+        "timestamp": timestamp,
+        "api_key": cloudinary.config().api_key,
+        "cloud_name": cloudinary.config().cloud_name
+    })
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
 #app.include_router(customers.router, prefix="/customers", tags=["Customers"])
