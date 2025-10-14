@@ -168,6 +168,7 @@ async def cloudinary_sign():
         "api_key": cloudinary.config().api_key,
         "cloud_name": cloudinary.config().cloud_name,
         "folder": "meenicode"
+        "eager": "c_crop,w_100,h_100,e_background_removal"
     })
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
