@@ -167,7 +167,7 @@ async def cloudinary_sign():
         "timestamp": timestamp,
         "api_key": cloudinary.config().api_key,
         "cloud_name": cloudinary.config().cloud_name,
-        "folder": "meenicode"
+        "folder": "meenicode",
         "eager": "c_crop,w_100,h_100,e_background_removal"
     })
 
