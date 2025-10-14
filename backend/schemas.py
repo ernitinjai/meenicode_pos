@@ -54,7 +54,28 @@ class ShopSchema(ShopBase):
 
 class ShopLogin(BaseModel):
     email: str
-    password: str        
+    password: str
+
+class CustomerBase(BaseModel):
+    name: str
+    email: str
+    phoneNumber: str
+    address: str
+    shopId: str
+
+
+# 🟢 For creating or updating a customer (client input)
+class CustomerCreate(CustomerBase):
+    pass
+
+
+# 🟢 For returning customer data (with id)
+class CustomerSchema(CustomerBase):
+    id: str
+
+    class Config:
+        orm_mode = True
+
 
 
 
