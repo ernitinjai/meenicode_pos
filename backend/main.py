@@ -155,7 +155,7 @@ async def cloudinary_sign():
     # Add additional options if you want folder, public_id, etc.
     params_to_sign = {"timestamp": timestamp,
                       "folder": "meenicode",
-                      "eager": "c_fit,w_100,h_100,e_background_removal"}
+                      "eager": "e_background_removal"}
     
     signature = cloudinary.utils.api_sign_request(
         params_to_sign,
@@ -168,7 +168,7 @@ async def cloudinary_sign():
         "api_key": cloudinary.config().api_key,
         "cloud_name": cloudinary.config().cloud_name,
         "folder": "meenicode",
-        "eager": "c_fit,w_100,h_100,e_background_removal"
+        "eager": "e_background_removal"
     })
 
 #app.include_router(products.router, prefix="/products", tags=["Products"])
