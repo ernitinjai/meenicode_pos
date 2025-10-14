@@ -154,7 +154,8 @@ async def cloudinary_sign():
     
     # Add additional options if you want folder, public_id, etc.
     params_to_sign = {"timestamp": timestamp,
-                      "folder": "meenicode"}
+                      "folder": "meenicode",
+                      "eager": "c_crop,w_100,h_100,e_background_removal"}
     
     signature = cloudinary.utils.api_sign_request(
         params_to_sign,
