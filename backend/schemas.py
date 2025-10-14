@@ -1,20 +1,6 @@
 # schemas.py
 from pydantic import BaseModel,EmailStr
-from typing import List, Optional
-
-class ProductCreate(BaseModel):
-    name: str
-    brand: str
-    barcode: str
-    unit: str
-    unit_quantity: int
-    selling_price: float
-    purchase_price: float
-    current_stock: int
-
-class ProductSchema(ProductCreate):
-    id: int
-    model_config = {"from_attributes": True}    
+from typing import List, Optional   
 
 class CustomerSchema(BaseModel):
     id: int
@@ -76,6 +62,43 @@ class CustomerSchema(CustomerBase):
     class Config:
         orm_mode = True
 
+class MasterProductBase(BaseModel):
+    productName: str
+    brand: str
+    barcode: str
+    unitQuantity: int
+    unit: str
+    category: str
+    subcategory: str
+    description: str
+    imageUrls: List[str] = []
 
+class MasterProductCreate(MasterProductBase):
+    pass
+
+class MasterProductSchema(MasterProductBase):
+    id: str
+
+    class Config:
+        orm_mode = True
+
+class ProductBase(BaseModel):
+    shopId: str
+    masterProductId: str
+    salePrice: float = 0.0
+    purchasePrice: float = 0.0
+    remark: str = ""
+    stock: int = 0
+    isQuickSale: bool = False
+    expiry: str = "NA"
+
+class ProductCreate(ProductBase):
+    pass
+
+class ProductSchema(ProductBase):
+    localId: int
+
+    class Config:
+        orm_mode = True
 
 
