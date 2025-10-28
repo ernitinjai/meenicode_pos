@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         mkdir backend/package
         pip install -r backend/requirements.txt -t backend/package/
-        cp -r backend/* backend/package/
+        rsync -av --progress backend/ backend/package/ --exclude package
         cd backend/package
         zip -r ../../backend-deploy.zip .
 
