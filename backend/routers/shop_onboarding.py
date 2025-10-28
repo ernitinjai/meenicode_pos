@@ -5,11 +5,11 @@ from database import get_db
 
 router = APIRouter()
 
-@router.get("/", response_model=list[schemas.ShopSchema])
+@router.get("", response_model=list[schemas.ShopSchema])
 def get_shops(db: Session = Depends(get_db)):
     return db.query(models.Shop).all()
 
-@router.post("/", response_model=schemas.ShopSchema)
+@router.post("", response_model=schemas.ShopSchema)
 def create_shop(shop: schemas.ShopCreate, db: Session = Depends(get_db)):
     shop_id = f"{shop.shopName}_{shop.phoneNumber}"
     if db.query(models.Shop).filter(models.Shop.id == shop_id).first():
