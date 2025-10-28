@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy import Column, String, Integer, Float, JSON
-from backend.database import Base
+from database import Base
 
 class MasterProduct(Base):
     __tablename__ = "master_products"

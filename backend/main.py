@@ -1,9 +1,9 @@
-from backend.routers import shop_onboarding
+from routers import shop_onboarding
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
-from backend.database import Base, engine
-from backend.routers import products, customers, cloudinary, master_products
+from database import Base, engine
+from routers import products, customers, cloudinary, master_products
 
 # Create tables
 Base.metadata.create_all(bind=engine)
