@@ -1,8 +1,9 @@
+from routers import shop_onboarding
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from database import Base, engine
-from routers import products, shops, customers, cloudinary, master_products
+from routers import products, customers, cloudinary, master_products
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -25,7 +26,7 @@ app.add_middleware(
 
 # Routers
 app.include_router(products.router, prefix="/products", tags=["Products"])
-app.include_router(shops.router, prefix="/shops", tags=["Shops"])
+app.include_router(shop_onboarding.router, prefix="/shops", tags=["Shops"])
 app.include_router(customers.router, prefix="/customers", tags=["Customers"])
 app.include_router(cloudinary.router)
 app.include_router(master_products.router)
