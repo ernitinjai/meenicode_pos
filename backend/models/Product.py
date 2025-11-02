@@ -5,8 +5,9 @@ from database import Base
 
 class Product(Base):
     __tablename__ = "products"
-
-    localId = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Local identifier
+    id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
+    localId = Column(String, default ="localId")  # Local identifier
+    localProductName = Column(String, default="default p name")
     masterProductId = Column(String, ForeignKey("master_products.id", ondelete="CASCADE"), nullable=False)
     shopId = Column(String, nullable=False)  # Foreign key to Shop table (if needed)
 

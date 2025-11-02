@@ -99,7 +99,7 @@ class ProductCreate(ProductBase):
     pass
 
 class ProductSchema(ProductBase):
-    localId: int
+    id: str
 
     class Config:
         orm_mode = True
