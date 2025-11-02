@@ -13,7 +13,9 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
-    return db_product
+    return {
+        "message": "product created successfully"
+    }
 
 # Get all products (optionally filter by shopId)
 @router.get("", response_model=List[schemas.ProductSchema])

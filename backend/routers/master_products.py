@@ -10,12 +10,13 @@ router = APIRouter()
 # Create
 @router.post("", response_model=schemas.MasterProductSchema)
 def create_master_product(product: schemas.MasterProductCreate, db: Session = Depends(get_db)):
-    product_id = str(uuid.uuid4())
-    db_product = models.MasterProduct(id=product_id, **product.dict())
+    db_product = models.MasterProduct(**product.dict())
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
-    return db_product
+    return {
+        "message": "Master product created successfully"
+    }
 
 # Get all
 @router.get("", response_model=List[schemas.MasterProductSchema])
