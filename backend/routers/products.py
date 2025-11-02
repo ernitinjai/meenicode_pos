@@ -4,7 +4,7 @@ from typing import List, Optional
 import models, schemas
 from database import get_db
 
-router = APIRouter(prefix="/products", tags=["Products"])
+router = APIRouter()
 
 # Create product
 @router.post("/", response_model=schemas.ProductSchema)
