@@ -29,7 +29,7 @@ app.include_router(products.router, prefix="/products", tags=["Products"])
 app.include_router(shop_onboarding.router, prefix="/shops", tags=["Shops"])
 app.include_router(customers.router, prefix="/customers", tags=["Customers"])
 app.include_router(cloudinary.router)
-app.include_router(master_products.router)
+app.include_router(master_products.router,prefix="/masters", tags=["Masters"])
 #app.include_router(sales.router, prefix="/sales", tags=["Sales"])
 
 handler = Mangum(app)

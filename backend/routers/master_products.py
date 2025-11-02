@@ -5,13 +5,10 @@ import models, schemas
 from database import get_db
 import uuid
 
-router = APIRouter(
-    prefix="/master-products",
-    tags=["Master Products"]
-)
+router = APIRouter()
 
 # Create
-@router.post("/", response_model=schemas.MasterProductSchema)
+@router.post("", response_model=schemas.MasterProductSchema)
 def create_master_product(product: schemas.MasterProductCreate, db: Session = Depends(get_db)):
     product_id = str(uuid.uuid4())
     db_product = models.MasterProduct(id=product_id, **product.dict())
@@ -21,7 +18,7 @@ def create_master_product(product: schemas.MasterProductCreate, db: Session = De
     return db_product
 
 # Get all
-@router.get("/", response_model=List[schemas.MasterProductSchema])
+@router.get("", response_model=List[schemas.MasterProductSchema])
 def get_all_master_products(db: Session = Depends(get_db)):
     return db.query(models.MasterProduct).all()
 
