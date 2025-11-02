@@ -63,6 +63,7 @@ class CustomerSchema(CustomerBase):
         orm_mode = True
 
 class MasterProductBase(BaseModel):
+    id: str
     productName: str
     brand: str
     barcode: str
@@ -84,6 +85,8 @@ class MasterProductSchema(MasterProductBase):
 
 class ProductBase(BaseModel):
     shopId: str
+    localId: str
+    localProductName: str
     masterProductId: str
     salePrice: float = 0.0
     purchasePrice: float = 0.0
