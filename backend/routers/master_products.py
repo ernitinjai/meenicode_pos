@@ -25,17 +25,17 @@ def get_all_master_products(db: Session = Depends(get_db)):
     return db.query(models.MasterProduct).all()
 
 # Get by ID
-@router.get("/{product_id}", response_model=schemas.MasterProductSchema)
-def get_master_product(product_id: str, db: Session = Depends(get_db)):
-    product = db.query(models.MasterProduct).filter(models.MasterProduct.id == product_id).first()
+@router.get("/{masterProductId}", response_model=schemas.MasterProductSchema)
+def get_master_product(masterProductId: str, db: Session = Depends(get_db)):
+    product = db.query(models.MasterProduct).filter(models.MasterProduct.id == masterProductId).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
 
 # Update
-@router.put("/{product_id}", response_model=schemas.MasterProductSchema)
-def update_master_product(product_id: str, updated_product: schemas.MasterProductCreate, db: Session = Depends(get_db)):
-    product = db.query(models.MasterProduct).filter(models.MasterProduct.id == product_id).first()
+@router.put("/{masterProductId}", response_model=schemas.MasterProductSchema)
+def update_master_product(masterProductId: str, updated_product: schemas.MasterProductCreate, db: Session = Depends(get_db)):
+    product = db.query(models.MasterProduct).filter(models.MasterProduct.id == masterProductId).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -47,15 +47,15 @@ def update_master_product(product_id: str, updated_product: schemas.MasterProduc
     return product
 
 # Delete
-@router.delete("/{product_id}")
-def delete_master_product(product_id: str, db: Session = Depends(get_db)):
-    product = db.query(models.MasterProduct).filter(models.MasterProduct.id == product_id).first()
+@router.delete("/{masterProductId}")
+def delete_master_product(masterProductId: str, db: Session = Depends(get_db)):
+    product = db.query(models.MasterProduct).filter(models.MasterProduct.id == masterProductId).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
     db.delete(product)
     db.commit()
-    return {"message": f"Master Product {product_id} deleted successfully"}
+    return {"message": f"Master Product {masterProductId} deleted successfully"}
 
 
 @router.get("/updated_after/{utc_timestamp}", response_model=List[schemas.MasterProductSchema])
