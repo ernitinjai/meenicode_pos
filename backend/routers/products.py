@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 import models, schemas
 from database import get_db
+from datetime import datetime
 
 router = APIRouter()
 
@@ -54,3 +55,18 @@ def delete_product(localId: int, db: Session = Depends(get_db)):
     db.delete(product)
     db.commit()
     return {"message": f"Product {localId} deleted successfully"}
+
+@router.get("/updated_after/{utc_timestamp}", response_model=List[schemas.ProductSchema])
+def get_products_updated_after(utc_timestamp: str, db: Session = Depends(get_db)):
+    try:
+        # Replace Z (Zulu) with +00:00 for Python parsing
+        given_time = datetime.fromisoformat(utc_timestamp.replace("Z", "+00:00"))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid UTC timestamp format. Use ISO 8601 format.")
+
+    updated_products = db.query(models.Product).filter(
+        models.Product.updatedAt > given_time
+    ).all()
+
+    return updated_products
+

@@ -61,7 +61,8 @@ def delete_master_product(product_id: str, db: Session = Depends(get_db)):
 @router.get("/updated_after/{utc_timestamp}", response_model=List[schemas.MasterProductSchema])
 def get_products_updated_after(utc_timestamp: str, db: Session = Depends(get_db)):
     try:
-        given_time = datetime.fromisoformat(utc_timestamp)
+        # Replace Z (Zulu) with +00:00 for Python parsing
+        given_time = datetime.fromisoformat(utc_timestamp.replace("Z", "+00:00"))
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid UTC timestamp format. Use ISO 8601 format.")
 
