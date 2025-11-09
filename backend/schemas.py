@@ -92,7 +92,6 @@ class MasterProductSchema(MasterProductBase):
 
 class ProductBase(BaseModel):
     shopId: str
-    localId: str
     localProductName: str
     masterProductId: str
     salePrice: float = 0.0
@@ -108,6 +107,7 @@ class ProductCreate(ProductBase):
 
 class ProductSchema(ProductBase):
     id: str
+    updatedAt: datetime
 
     class Config:
         orm_mode = True
