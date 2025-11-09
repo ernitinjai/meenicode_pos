@@ -35,7 +35,7 @@ def get_product(masterProductId: str, db: Session = Depends(get_db)):
     return product
 
 # Update
-@router.put("/{masterProductId}", response_model=schemas.ProductSchema)
+@router.post("/{masterProductId}", response_model=schemas.ProductSchema)
 def update_product(masterProductId: str, updated_product: schemas.ProductCreate, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.masterProductId == masterProductId).first()
     if not product:
