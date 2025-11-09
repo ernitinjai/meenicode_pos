@@ -19,12 +19,21 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
     }
 
 # Get all products (optionally filter by shopId)
-@router.get("", response_model=List[schemas.ProductSchema])
-def get_products(shopId: Optional[str] = None, db: Session = Depends(get_db)):
-    query = db.query(models.Product)
-    if shopId:
-        query = query.filter(models.Product.shopId == shopId)
-    return query.all()
+@router.get("/{shopId}", response_model=List[schemas.ProductSchema])
+def get_products(shopId: str, db: Session = Depends(get_db)):
+    """
+    Get all products for a given shop ID.
+    """
+    products = (
+        db.query(models.Product)
+        .filter(models.Product.shopId == shopId)
+        .all()
+    )
+
+    if not products:
+        raise HTTPException(status_code=404, detail=f"No products found for shopId: {shopId}")
+
+    return products
 
 # Get by masterProductId
 @router.get("/{masterProductId}", response_model=schemas.ProductSchema)
