@@ -1,6 +1,7 @@
 # schemas.py
 from pydantic import BaseModel,EmailStr
-from typing import List, Optional   
+from typing import List, Optional 
+from datetime import datetime  
 
 class CustomerSchema(BaseModel):
     id: int
@@ -8,6 +9,7 @@ class CustomerSchema(BaseModel):
     phone: Optional[str]
     email: Optional[str]
     address: Optional[str]
+    shopId: List[str] = []
 
     model_config = {
         "from_attributes": True
@@ -45,9 +47,9 @@ class ShopLogin(BaseModel):
 class CustomerBase(BaseModel):
     name: str
     email: str
-    phoneNumber: str
+    phone: str
     address: str
-    shopId: str
+    shopId: List[str]=[]
 
 
 # 🟢 For creating or updating a customer (client input)
@@ -73,12 +75,17 @@ class MasterProductBase(BaseModel):
     subcategory: str
     description: str
     imageUrls: List[str] = []
+    isLoose: bool = False
+    looseUnitQuantityInBox: int = 1
+
+    
 
 class MasterProductCreate(MasterProductBase):
     pass
 
 class MasterProductSchema(MasterProductBase):
     id: str
+    updatedAt: datetime
 
     class Config:
         orm_mode = True
@@ -94,6 +101,7 @@ class ProductBase(BaseModel):
     stock: int = 0
     isQuickSale: bool = False
     expiry: str = "NA"
+
 
 class ProductCreate(ProductBase):
     pass

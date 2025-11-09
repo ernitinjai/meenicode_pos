@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -55,3 +56,18 @@ def delete_master_product(product_id: str, db: Session = Depends(get_db)):
     db.delete(product)
     db.commit()
     return {"message": f"Master Product {product_id} deleted successfully"}
+
+
+@router.get("/updated_after/{utc_timestamp}", response_model=List[schemas.MasterProductSchema])
+def get_products_updated_after(utc_timestamp: str, db: Session = Depends(get_db)):
+    try:
+        given_time = datetime.fromisoformat(utc_timestamp)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid UTC timestamp format. Use ISO 8601 format.")
+
+    updated_products = db.query(models.MasterProduct).filter(
+        models.MasterProduct.updatedAt > given_time
+    ).all()
+
+    return updated_products
+

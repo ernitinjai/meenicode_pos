@@ -5,13 +5,10 @@ import models, schemas
 from database import get_db
 import uuid
 
-router = APIRouter(
-    prefix="/customers",
-    tags=["Customers"]
-)
+router = APIRouter()
 
 # 🟢 Create Customer
-@router.post("/", response_model=schemas.CustomerSchema)
+@router.post("", response_model=schemas.CustomerSchema)
 def create_customer(customer: schemas.CustomerCreate, db: Session = Depends(get_db)):
     customer_id = str(uuid.uuid4())
     db_customer = models.Customer(id=customer_id, **customer.dict())
@@ -22,7 +19,7 @@ def create_customer(customer: schemas.CustomerCreate, db: Session = Depends(get_
 
 
 # 🟢 Get All Customers
-@router.get("/", response_model=List[schemas.CustomerSchema])
+@router.get("", response_model=List[schemas.CustomerSchema])
 def get_all_customers(db: Session = Depends(get_db)):
     return db.query(models.Customer).all()
 
@@ -31,7 +28,7 @@ def get_all_customers(db: Session = Depends(get_db)):
 @router.get("/search", response_model=List[schemas.CustomerSchema])
 def search_customers(
     shopId: Optional[str] = Query(None),
-    phoneNumber: Optional[str] = Query(None),
+    phone: Optional[str] = Query(None),
     email: Optional[str] = Query(None),
     name: Optional[str] = Query(None),
     db: Session = Depends(get_db)
@@ -40,8 +37,8 @@ def search_customers(
 
     if shopId:
         query = query.filter(models.Customer.shopId == shopId)
-    if phoneNumber:
-        query = query.filter(models.Customer.phoneNumber == phoneNumber)
+    if phone:
+        query = query.filter(models.Customer.phone == phone)
     if email:
         query = query.filter(models.Customer.email == email)
     if name:
