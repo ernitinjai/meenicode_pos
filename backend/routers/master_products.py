@@ -20,9 +20,30 @@ def create_master_product(product: schemas.MasterProductCreate, db: Session = De
     }
 
 # Get all
-@router.get("", response_model=List[schemas.MasterProductSchema])
+def sanitize_master_product_data(entity: models.MasterProduct):
+    """Convert ORM entity to sanitized dict so no nulls reach the client."""
+    return {
+        "id": entity.id,
+        "productName": entity.productName or "Unknown",
+        "brand": entity.brand or "",
+        "barcode": entity.barcode or "",
+        "unitQuantity": entity.unitQuantity or 0,
+        "unit": entity.unit or "",
+        "category": entity.category or "",
+        "subcategory": entity.subcategory or "",
+        "description": entity.description or "",
+        "imageUrls": entity.imageUrls if isinstance(entity.imageUrls, list) else [],
+        "isLoose": bool(entity.isLoose) if entity.isLoose is not None else False,
+        "looseUnitQuantityInBox": entity.looseUnitQuantityInBox or 1,
+        "updatedAt": entity.updatedAt,
+    }
+
+
+@router.get("", response_model=list[schemas.MasterProductSchema])
 def get_all_master_products(db: Session = Depends(get_db)):
-    return db.query(models.MasterProduct).all()
+    master_products = db.query(models.MasterProduct).all()
+    sanitized = [sanitize_master_product_data(p) for p in master_products]
+    return sanitized
 
 # Get by ID
 @router.get("/{masterProductId}", response_model=schemas.MasterProductSchema)

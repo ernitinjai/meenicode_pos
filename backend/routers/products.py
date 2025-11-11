@@ -1,3 +1,4 @@
+from package.fastapi.param_functions import Query
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -66,16 +67,25 @@ def delete_product(masterProductId: int, db: Session = Depends(get_db)):
     return {"message": f"Product {masterProductId} deleted successfully"}
 
 @router.get("/updated_after/{utc_timestamp}", response_model=List[schemas.ProductSchema])
-def get_products_updated_after(utc_timestamp: str, db: Session = Depends(get_db)):
+def get_products_updated_after(
+    utc_timestamp: str,
+    shopName: str = Query(...),  # require shopName from query params
+    db: Session = Depends(get_db)
+):
     try:
-        # Replace Z (Zulu) with +00:00 for Python parsing
+        # Convert Android Instant.toString() format → ISO 8601 for Python
         given_time = datetime.fromisoformat(utc_timestamp.replace("Z", "+00:00"))
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid UTC timestamp format. Use ISO 8601 format.")
 
-    updated_products = db.query(models.Product).filter(
-        models.Product.updatedAt > given_time
-    ).all()
+    updated_products = (
+        db.query(models.Product)
+        .filter(
+            models.Product.updatedAt > given_time,
+            models.Product.shopId == shopName
+        )
+        .all()
+    )
 
     return updated_products
 
