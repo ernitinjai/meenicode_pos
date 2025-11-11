@@ -39,8 +39,8 @@ def sanitize_master_product_data(entity: models.MasterProduct):
 
 
 @router.get("", response_model=list[schemas.MasterProductSchema])
-def get_all_master_products(db: Session = Depends(get_db)):
-    master_products = db.query(models.MasterProduct).offset(0).limit(5000).all()
+def get_all_master_products(skip: int = 0, limit: int = 500, db: Session = Depends(get_db)):
+    master_products = db.query(models.MasterProduct).offset(skip).limit(limit).all()
     sanitized = [sanitize_master_product_data(p) for p in master_products]
     return sanitized
 
