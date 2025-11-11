@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from typing import List
 import models, schemas
 from database import get_db
-import uuid
 
 router = APIRouter()
 
@@ -41,7 +40,7 @@ def sanitize_master_product_data(entity: models.MasterProduct):
 
 @router.get("", response_model=list[schemas.MasterProductSchema])
 def get_all_master_products(db: Session = Depends(get_db)):
-    master_products = db.query(models.MasterProduct).all()
+    master_products = db.query(models.MasterProduct).offset(0).limit(10).all()
     sanitized = [sanitize_master_product_data(p) for p in master_products]
     return sanitized
 
