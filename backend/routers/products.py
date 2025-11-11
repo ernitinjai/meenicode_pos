@@ -1,5 +1,4 @@
-from fastapi.param_functions import Query
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import models, schemas
