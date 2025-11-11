@@ -1,4 +1,4 @@
-from package.fastapi.param_functions import Query
+from fastapi.param_functions import Query
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
