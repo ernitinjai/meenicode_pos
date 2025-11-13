@@ -12,8 +12,25 @@ def get_shops(db: Session = Depends(get_db)):
 @router.post("", response_model=schemas.ShopSchema)
 def create_shop(shop: schemas.ShopCreate, db: Session = Depends(get_db)):
     shop_id = f"{shop.shopName}_{shop.phoneNumber}"
+
+    # check if any shop already exists with same email or phone
+    existing_shop = db.query(models.Shop).filter(
+        (models.Shop.phoneNumber == shop.phoneNumber) |
+        (models.Shop.email == shop.email)
+    ).first()
+
+    if existing_shop:
+        raise HTTPException(
+            status_code=400,
+            detail="Shop with this phone or email already exists"
+        )
+
+    # also check if ID already exists (optional safeguard)
     if db.query(models.Shop).filter(models.Shop.id == shop_id).first():
-        raise HTTPException(status_code=400, detail="Shop already exists")
+        raise HTTPException(
+            status_code=400,
+            detail="Shop already exists"
+        )
 
     db_shop = models.Shop(id=shop_id, **shop.dict())
     db.add(db_shop)
